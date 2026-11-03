@@ -1,0 +1,71 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "args": [
+        "server.mjs"
+      ],
+      "command": "node",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "background": {
+          "beginsPattern": ".*",
+          "activeOnStart": true,
+          "endsPattern": "НАУЧДВИЖ запущен:"
+        },
+        "pattern": {
+          "regexp": "^(.*):(\\d+):(.*)$",
+          "file": 1,
+          "line": 2,
+          "message": 3
+        },
+        "owner": "custom"
+      },
+      "label": "НАУЧДВИЖ: запустить localhost",
+      "type": "process",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "windows": {
+        "command": "powershell.exe",
+        "args": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "RemoteSigned",
+          "-File",
+          "${workspaceFolder}/Запустить.ps1",
+          "-Mode",
+          "Serve"
+        ]
+      }
+    },
+    {
+      "command": "node",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "type": "process",
+      "label": "НАУЧДВИЖ: тесты",
+      "problemMatcher": [],
+      "args": [
+        "--test"
+      ],
+      "windows": {
+        "command": "powershell.exe",
+        "args": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "RemoteSigned",
+          "-File",
+          "${workspaceFolder}/Запустить.ps1",
+          "-Mode",
+          "Test"
+        ]
+      }
+    }
+  ]
+}

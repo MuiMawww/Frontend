@@ -1,0 +1,15 @@
+{
+  "name": "nauchdvizh",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "НАУЧДВИЖ — фронтенд по макету Конференции",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node server.mjs",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
