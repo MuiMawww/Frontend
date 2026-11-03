@@ -1,4 +1,4 @@
-import { readLocal, writeLocal } from './storage.js';
+import { readLocal, writeLocal } from './local-storage.js';
 
 const isString = value => typeof value === 'string';
 const strings = value => Array.isArray(value) && value.every(isString);
@@ -40,7 +40,7 @@ function demoRepository() {
   return {
     async load() {
       const [{ conferences }, { defaultProfile }] = await Promise.all([
-        import('../fixtures/conferences.js'), import('../fixtures/profile.js'),
+        import('../fixtures/demo-conferences.js'), import('../fixtures/demo-profile.js'),
       ]);
       currentProfile = { ...defaultProfile, ...readLocal('profile', {}) };
       const oldBio = 'Студент направления «Прикладная математика и информатика». Имею опыт с Java, C#, Python, SQL.';

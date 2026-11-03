@@ -1,7 +1,7 @@
 import { escapeHtml as esc, tag } from '../shared/html.js';
-import { card } from './card.js';
-import { hero } from './layout.js';
-import { filterConferences } from '../domain/conferences.js';
+import { card } from './conference-card.js';
+import { hero } from './site-layout.js';
+import { filterConferences } from '../domain/conference-filters.js';
 const categories = ['Программирование','Инженерия','Медицина','Архитектура','Строительство','Экономика'];
 export function search(filters) {
   return `<section class="search-panel" aria-label="Поиск конференций" data-node-id="38:112">

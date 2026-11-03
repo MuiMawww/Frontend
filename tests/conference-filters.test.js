@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {conferences} from '../src/fixtures/conferences.js';
-import {filterConferences, dateValue} from '../src/domain/conferences.js';
+import {conferences} from '../src/fixtures/demo-conferences.js';
+import {filterConferences, dateValue} from '../src/domain/conference-filters.js';
 import {escapeHtml} from '../src/shared/html.js';
 
 test('Поиск без учёта регистра и пробелов',()=>{

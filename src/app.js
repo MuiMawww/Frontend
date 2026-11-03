@@ -1,10 +1,10 @@
-import { createRepository } from './services/repository.js';
+import { createRepository } from './services/frontend-repository.js';
 import { escapeHtml as esc } from './shared/html.js';
-import { routes, header, footer, development } from './views/layout.js';
-import { search, catalog, favoritesPage, listMarkup } from './views/catalog.js';
-import { profilePage } from './views/profile.js';
-import { conferenceDetail } from './views/detail.js';
-import { fitResumeHeight } from './ui/responsive.js';
+import { routes, header, footer, development } from './views/site-layout.js';
+import { search, catalog, favoritesPage, listMarkup } from './views/conference-catalog.js';
+import { profilePage } from './views/profile-page.js';
+import { conferenceDetail } from './views/conference-detail-dialog.js';
+import { fitResumeHeight } from './ui/responsive-layout.js';
 const app = document.querySelector('#app');
 const modal = document.querySelector('#modal');
 const repository = createRepository(document.querySelector('meta[name="api-base"]').content);

@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createRepository } from '../src/services/repository.js';
-import { conferences } from '../src/fixtures/conferences.js';
-import { defaultProfile } from '../src/fixtures/profile.js';
-import { listMarkup } from '../src/views/catalog.js';
-import { conferenceDetail } from '../src/views/detail.js';
-import { profilePage } from '../src/views/profile.js';
+import { createRepository } from '../src/services/frontend-repository.js';
+import { conferences } from '../src/fixtures/demo-conferences.js';
+import { defaultProfile } from '../src/fixtures/demo-profile.js';
+import { listMarkup } from '../src/views/conference-catalog.js';
+import { conferenceDetail } from '../src/views/conference-detail-dialog.js';
+import { profilePage } from '../src/views/profile-page.js';
 
 test('HTTP-контракт загрузки и изменений', async () => {
   const calls = [];
