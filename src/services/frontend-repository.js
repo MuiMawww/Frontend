@@ -1,3 +1,4 @@
+import { RequestError } from './request-error.js';
 import { readLocal, writeLocal } from './local-storage.js';
 
 const isString = value => typeof value === 'string';
@@ -47,6 +48,11 @@ function demoRepository() {
       if (currentProfile.bio === oldBio) currentProfile.bio = defaultProfile.bio;
       return { conferences, profile: currentProfile, favorites: storedFavorites() };
     },
+    async loadCatalog() { return (await this.load()).conferences; },
+    async loadAccount() {
+      const { profile, favorites } = await this.load();
+      return { profile, favorites };
+    },
     async updateProfile(changes) {
       const updated = { ...currentProfile, ...changes };
       persist('profile', updated);
@@ -72,7 +78,10 @@ export function createRepository(base, request = fetch) {
       ...options,
       headers: { Accept: 'application/json', ...options.headers },
     });
-    if (!response.ok) throw new Error(`HTTP ${response.status} для ${path}`);
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      throw new RequestError(response.status, body?.errors || {});
+    }
     return response;
   }
 
@@ -81,14 +90,28 @@ export function createRepository(base, request = fetch) {
   }
 
   return {
-    async load() {
-      const [conferences, profile, favorites] = await Promise.all([
-        get('/conferences'), get('/me'), get('/me/favorites'),
-      ]);
-      if (!Array.isArray(conferences) || !conferences.every(validateConference) || !strings(favorites)) {
-        throw new Error('Некорректный ответ каталога или избранного');
+    async loadCatalog() {
+      const conferences = await get('/conferences');
+      if (!Array.isArray(conferences) || !conferences.every(validateConference)) {
+        throw new Error('Некорректный ответ каталога');
       }
-      return { conferences, favorites, profile: validateProfile(profile) };
+      return conferences;
+    },
+    async loadAccount() {
+      let profile;
+      try {
+        profile = validateProfile(await get('/me'));
+      } catch (error) {
+        if (error.status === 401) return { profile: null, favorites: [] };
+        throw error;
+      }
+      const favorites = await get('/me/favorites');
+      if (!strings(favorites)) throw new Error('Некорректный ответ избранного');
+      return { profile, favorites };
+    },
+    async load() {
+      const conferences = await this.loadCatalog();
+      return { conferences, ...await this.loadAccount() };
     },
     async updateProfile(changes) {
       const response = await send('/me', {

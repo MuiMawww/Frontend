@@ -1,3 +1,4 @@
+import { promoBanner } from './promo-banner.js';
 import { escapeHtml as esc, tag } from '../shared/html.js';
 import { card } from './conference-card.js';
 import { hero } from './site-layout.js';
@@ -23,7 +24,7 @@ export function listMarkup({ conferences, filters, favorites, page, pageStart, h
     ${isHome?'<a class="show-more" href="#conferences">Показать больше</a>':count>1?`<nav class="pagination" aria-label="Страницы конференций"><button class="page-shift page-back" data-action="previous-pages" ${pageStart===1?'disabled':''} aria-label="Предыдущие номера страниц"></button>${Array.from({length:Math.min(3,count-pageStart+1)},(_,offset)=>pageStart+offset-1).map(i=> `<button data-page="${i+1}" ${page===i+1?'aria-current="page"':''} aria-label="Страница ${i+1}">${i+1}</button>`).join('')}<button class="page-shift" data-action="shift-pages" ${pageStart+2>=count?'disabled':''} aria-label="Следующие номера страниц"></button></nav>`:''}`;
 }
 export function catalog(state) {
-  return `${state.home?hero():''}<section class="catalog ${state.home?'home-catalog':''}" aria-label="Каталог конференций">${state.home?'<div class="advertisement" tabindex="-1" aria-label="Место для информации о проекте" data-node-id="37:89"></div>':''}${search(state.filters)}<div id="conference-list" class="conference-list">${listMarkup(state)}</div></section>`;
+  return `${state.home?hero():''}<section class="catalog ${state.home?'home-catalog':''}" aria-label="Каталог конференций">${state.home?promoBanner():''}${search(state.filters)}<div id="conference-list" class="conference-list">${listMarkup(state)}</div></section>`;
 }
 export function favoritesPage(conferences, favorites) {
   const saved=conferences.filter(c=>favorites.includes(c.id));

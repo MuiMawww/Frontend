@@ -1,31 +1,51 @@
-function fitQuickFilters() {
-  const row = document.querySelector('.quick-filters');
-  if (!row)
-    return;
-  if (fitQuickFilters.row !== row) {
-    fitQuickFilters.observer?.disconnect();
-    fitQuickFilters.observer = new ResizeObserver(() => requestAnimationFrame(fitQuickFilters));
-    fitQuickFilters.observer.observe(row);
-    fitQuickFilters.row = row;
-  }
-  const buttons = [...row.children];
-  buttons.forEach(b => b.hidden = false);
-  const widths = buttons.map(b => b.getBoundingClientRect().width);
-  const gap = parseFloat(getComputedStyle(row).columnGap) || 0;
-  const available = row.getBoundingClientRect().width;
-  let used = 0;
-  buttons.forEach((button, i) => {
-    const required = widths[i] + (used ? gap : 0);
-    const fits = i === 0 || used + required <= available + 0.5;
-    button.hidden = !fits;
-    if (fits)
-      used += required;
+let quickFiltersRow;
+let quickFiltersObserver;
+let quickFiltersFrame = 0;
+
+function scheduleQuickFilters() {
+  if (quickFiltersFrame) return;
+  quickFiltersFrame = requestAnimationFrame(() => {
+    quickFiltersFrame = 0;
+    fitQuickFilters();
   });
 }
-new MutationObserver(() => requestAnimationFrame(() => { fitQuickFilters(); fitResumeHeight(); })).observe(document.querySelector('#app'), { childList: true, subtree: true });
-window.addEventListener('resize', fitQuickFilters);
-document.fonts.ready.then(fitQuickFilters);
-fitQuickFilters();
+
+function fitQuickFilters() {
+  const row = document.querySelector('.quick-filters');
+  if (quickFiltersRow !== row) {
+    quickFiltersObserver?.disconnect();
+    quickFiltersRow = row;
+    if (row) {
+      // Font changes can resize buttons without changing the row's width.
+      quickFiltersObserver = new ResizeObserver(scheduleQuickFilters);
+      [row, ...row.children].forEach(element => quickFiltersObserver.observe(element));
+    }
+  }
+  if (!row) return;
+
+  const buttons = [...row.children];
+  // Read every natural width, then apply visibility in the same frame.
+  buttons.forEach(button => button.hidden = false);
+  const widths = buttons.map(button => button.getBoundingClientRect().width);
+  const gap = parseFloat(getComputedStyle(row).columnGap) || 0;
+  const available = row.getBoundingClientRect().width - 1;
+  let used = 0;
+  buttons.forEach((button, index) => {
+    const required = widths[index] + (used ? gap : 0);
+    const fits = index === 0 || used + required <= available;
+    button.hidden = !fits;
+    if (fits) used += required;
+  });
+}
+
+new MutationObserver(() => {
+  scheduleQuickFilters();
+  requestAnimationFrame(fitResumeHeight);
+}).observe(document.querySelector('#app'), { childList: true, subtree: true });
+window.addEventListener('resize', scheduleQuickFilters);
+document.fonts.addEventListener('loadingdone', scheduleQuickFilters);
+document.fonts.ready.then(scheduleQuickFilters);
+scheduleQuickFilters();
 // Reserve room for the note, actions, education and job before fitting the biography.
 export function fitResumeHeight() {
   const panel = document.querySelector('.resume');
